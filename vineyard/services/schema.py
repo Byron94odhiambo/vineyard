@@ -11,7 +11,7 @@ class CuisineType(DjangoObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model=Product        
-        fields=('id','name','color','palate','nose')
+        fields=('id','name','color','palate','nose','price')
 
 
 
