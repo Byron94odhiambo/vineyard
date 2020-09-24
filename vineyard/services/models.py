@@ -82,10 +82,11 @@ class Product(models.Model):
     description = models.TextField('Description', blank=True,null =True)
     price = models.DecimalField('Price', decimal_places=2, max_digits= 100,null =True)
     created =models.DateTimeField('Created', auto_now_add=True,null =True)
+    user= models.ForeignKey(User,on_delete=models.CASCADE,null =True)
     
 
     class Meta:
-        ordering =['name']
+        ordering =['id']
 
     def __str__(self):
         return self.name

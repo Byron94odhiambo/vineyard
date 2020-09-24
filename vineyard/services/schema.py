@@ -11,7 +11,7 @@ class CuisineType(DjangoObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model=Product        
-        fields=('id','name','color','palate','nose','price')
+        fields=('id','name','color','palate','nose','price','user')
 
 
 
@@ -108,6 +108,7 @@ class UpdateProduct(graphene.Mutation):
 class Query(ObjectType):
     cuisine =graphene.Field(CuisineType, id=graphene.Int())
     cuisine = graphene.List(CuisineType)
+    product =graphene.Field(ProductType, id=graphene.Int())
     product=graphene.List(ProductType)
     
 
