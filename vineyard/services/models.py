@@ -75,13 +75,13 @@ class Agent(User):
 
    
 class Product(models.Model):
-    name = models.CharField(max_length= 100)
+    name = models.CharField(max_length= 100,null =True)
     color= models.CharField(max_length = 100, null=True)
     nose= models.CharField(max_length = 100,null =True)
     palate=models.CharField(max_length = 100,null =True)
-    description = models.TextField('Description', blank=True)
-    price = models.DecimalField('Price', decimal_places=2, max_digits= 100)
-    created =models.DateTimeField('Created', auto_now_add=True)
+    description = models.TextField('Description', blank=True,null =True)
+    price = models.DecimalField('Price', decimal_places=2, max_digits= 100,null =True)
+    created =models.DateTimeField('Created', auto_now_add=True,null =True)
     
 
     class Meta:

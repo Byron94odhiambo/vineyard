@@ -45,6 +45,20 @@ class CreateCuisine(graphene.Mutation):
         cuisine_instance.save()
         return CreateCuisine(ok =ok,cuisine = cuisine_instance) 
 
+class CreateProduct(graphene.Mutation):
+    class Arguments:
+        input = ProductInput(required =True)
+    ok = graphene.Boolean()
+    product =graphene.Field(ProductType)
+
+
+    @staticmethod
+    def mutate(root,info,input=None):
+        ok =True
+        product_instance=Product(name=input.name)
+        product_instance.save()
+        return CreateProduct(ok=ok, product=product_instance)            
+
 
 
 
@@ -69,6 +83,25 @@ class UpdateCuisine(graphene.Mutation):
 
         return UpdateCuisine(ok =ok,cuisine=None)  
 
+class UpdateProduct(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required =True)
+        input=ProductInput(required = True)
+
+    ok = graphene.Boolean()
+    product= graphene.Field(ProductType)
+
+    @staticmethod
+    def mutate(root,info,id,input=None):
+        ok=False
+        product_instance=Product.objects.get(pk=id)
+        if product_instance:
+            ok=True
+            product_instance.name=input.name
+            product_instance.save()
+            return UpdateProduct(ok=ok,product=product_instance)
+        return UpdateProduct(ok=ok,product=None)        
+
 
 
 
@@ -86,6 +119,8 @@ class Query(ObjectType):
             return Product.objects.get(pk=id)
 
         return None
+
+        
     def resolve_product(self,info,**kwargs):
         return Product.objects.all()        
 
@@ -110,3 +145,5 @@ class Query(ObjectType):
 class Mutation(graphene.ObjectType):
     create_cuisine=CreateCuisine.Field()
     update_cuisine =UpdateCuisine.Field()    
+    create_product= CreateProduct.Field()
+    update_product= UpdateProduct.Field()
