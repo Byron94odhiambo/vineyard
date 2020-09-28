@@ -1,24 +1,34 @@
+from django.db.models import fields
 import graphene
 from graphene_django.types import DjangoObjectType, ObjectType
-from .models import Cuisine,Wineproducer,Stockist,Agent,Product
+from .models import Wineproducer,Stockist,Agent,Product
 
 
-
-class CuisineType(DjangoObjectType):
-    class Meta:
-        model=Cuisine
 
 class ProductType(DjangoObjectType):
     class Meta:
         model=Product        
-        fields=('id','name','color','palate','nose','price','user')
+        fields=('id','name','color','palate','nose','price')
+
+class WineproducerType(DjangoObjectType):
+    class Meta:
+        model = Wineproducer  
+        fields =('__all__')      
+
+class StockistType(DjangoObjectType):
+    class Meta:
+        model=Stockist
+        fields=("__all__")        
+
+class AgentType(DjangoObjectType):
+    class Meta:
+        model=Agent
+        fields=("__all__")        
 
 
 
 
-class CuisineInput(graphene.InputObjectType):
-    id = graphene.ID()
-    name =graphene.String()  
+ 
 
 class ProductInput(graphene.InputObjectType):
     id=graphene.ID()
@@ -32,18 +42,7 @@ class ProductInput(graphene.InputObjectType):
 
 
 
-class CreateCuisine(graphene.Mutation):
-    class Arguments:
-        input =CuisineInput(required = True)
-    ok =graphene.Boolean()
-    cuisine =graphene.Field(CuisineType)
 
-    @staticmethod
-    def mutate(root,info,input =None):
-        ok =True
-        cuisine_instance=Cuisine(name =input.name)
-        cuisine_instance.save()
-        return CreateCuisine(ok =ok,cuisine = cuisine_instance) 
 
 class CreateProduct(graphene.Mutation):
     class Arguments:
@@ -63,25 +62,7 @@ class CreateProduct(graphene.Mutation):
 
 
 
-class UpdateCuisine(graphene.Mutation):
-    class Arguments:
-        id =graphene.Int(required = True)
-        input =CuisineInput(required = True)
 
-    ok = graphene.Boolean()
-    cuisine =graphene.Field(CuisineType)
-
-    @staticmethod
-    def mutate(root,info,id,input=None):
-        ok =False
-        cuisine_instance =Cuisine.objects.get(pk =id)
-        if cuisine_instance:
-            ok =True
-            cuisine_instance.name=input.name
-            cuisine_instance.save()
-            return UpdateCuisine(ok=ok,cuisine =cuisine_instance)
-
-        return UpdateCuisine(ok =ok,cuisine=None)  
 
 class UpdateProduct(graphene.Mutation):
     class Arguments:
@@ -106,10 +87,25 @@ class UpdateProduct(graphene.Mutation):
 
 
 class Query(ObjectType):
-    cuisine =graphene.Field(CuisineType, id=graphene.Int())
-    cuisine = graphene.List(CuisineType)
+    
     product =graphene.Field(ProductType, id=graphene.Int())
     product=graphene.List(ProductType)
+    wineproducer = graphene.List(WineproducerType)
+    stockist=graphene.List(StockistType)
+    agent=graphene.List(AgentType)
+    
+
+
+
+    def resolve_stockist(self,info,**kwargs):
+        return Stockist.objects.all()
+
+
+    def resolve_agent(self,info,**kwargs):
+        return Agent.objects.all()    
+
+    def resolve_wineproducer(sel,info,**kwargs):
+        return Wineproducer.objects.all()
     
 
 
@@ -127,24 +123,7 @@ class Query(ObjectType):
 
 
 
-    
 
-
-    def resolve_cuisine(root,info,**kwargs):
-        id =kwargs.get('id')
-
-        if id is not None:
-            return Cuisine.objects.get(pk =id)
-
-        return None
-
-
-    def resolve_cuisine(self,info,**kwargs):
-        return Cuisine.objects.all()  
-
-
-class Mutation(graphene.ObjectType):
-    create_cuisine=CreateCuisine.Field()
-    update_cuisine =UpdateCuisine.Field()    
+class Mutation(graphene.ObjectType):    
     create_product= CreateProduct.Field()
     update_product= UpdateProduct.Field()

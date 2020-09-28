@@ -14,6 +14,8 @@ class User(AbstractUser):
 
     type = models.CharField(_('Type'), max_length =50, choices = Types.choices, default = Types.WINEPRODUCER)
     name = models.CharField(_("Name of User"), blank =True,max_length =255)
+    
+    
 
     def get_absolute_url(self):
         return reverse("user:detail", kwargs= {"username": self.username})
@@ -82,7 +84,7 @@ class Product(models.Model):
     description = models.TextField('Description', blank=True,null =True)
     price = models.DecimalField('Price', decimal_places=2, max_digits= 100,null =True)
     created =models.DateTimeField('Created', auto_now_add=True,null =True)
-    user= models.ForeignKey(User,on_delete=models.CASCADE,null =True)
+    owner= models.ForeignKey(User, related_name='owners',on_delete=models.CASCADE,null =True)
     
 
     class Meta:
@@ -92,18 +94,6 @@ class Product(models.Model):
         return self.name
 
 
-    
 
-
-class Cuisine(models.Model):
-    name = models.CharField(max_length=100)
-
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering= ('name',)            
-    
 
       
